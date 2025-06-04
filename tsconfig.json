@@ -9,6 +9,7 @@
 		"strict": true,
 		"skipLibCheck": true,
 		"allowImportingTsExtensions": true,
-		"noEmit": true
-	}
+		"emitDeclarationOnly": true
+	},
+	"files": ["source/adapter.ts"]
 }

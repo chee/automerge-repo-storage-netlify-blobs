@@ -3,12 +3,13 @@
 	"publishConfig": {
 		"access": "public"
 	},
-	"version": "1.0.0-experimental.0",
+	"version": "0.0.0",
 	"description": "experimental storage adapter for automerge repo on Netlify blobs",
 	"main": "index.js",
 	"type": "module",
+	"types": "index.d.ts",
 	"scripts": {
-		"mk": "tsc --emitDeclarationOnly -d && esbuild source/adapter.ts --outfile=index.js",
+		"mk": "tsc --emitDeclarationOnly -d && esbuild source/adapter.ts --outfile=index.js && mv source/adapter.d.ts index.d.ts",
 		"test": "vitest",
 		"prepare": "pnpm mk"
 	},
