@@ -13,6 +13,10 @@
 		"test": "vitest",
 		"prepare": "pnpm mk"
 	},
+	"files": [
+		"index.js",
+		"index.d.ts"
+	],
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
