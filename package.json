@@ -5,15 +5,15 @@
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"mk": "tsc --emitDeclarationOnly -d && esbuild source/adapter.ts --outfile=index.js",
+		"test": "vitest",
+		"prepare": "pnpm mk"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"packageManager": "pnpm@10.4.1",
 	"dependencies": {
-		"@automerge/automerge-repo": "2.0.0-alpha.26",
-		"@automerge/automerge-repo-network-websocket": "2.0.0-alpha.26",
 		"@netlify/blobs": "^8.1.2",
 		"@types/express": "^5.0.1",
 		"@types/node": "^22.14.0",
@@ -24,5 +24,13 @@
 	},
 	"volta": {
 		"node": "22.14.0"
+	},
+	"devDependencies": {
+		"@automerge/automerge-repo": "2.0.1",
+		"@automerge/automerge-repo-network-websocket": "2.0.1",
+		"dotenv": "^16.5.0",
+		"esbuild": "^0.25.5",
+		"vite-plugin-wasm": "^3.4.1",
+		"vitest": "^3.2.1"
 	}
 }

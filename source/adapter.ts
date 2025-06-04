@@ -7,12 +7,13 @@ import type {
 
 export type NetlifyBlobAdapterOptions = GetStoreOptions
 
-export default class NetlifyBlobAdapter implements StorageAdapterInterface {
+export default class NetlifyBlobsAdapter implements StorageAdapterInterface {
 	private store: Store
 	private cache: Map<string, Uint8Array> = new Map()
 	constructor(options: NetlifyBlobAdapterOptions = {}) {
 		try {
 			this.store = getStore(options)
+			console.log(this.store)
 		} catch (error) {
 			console.error("Error initializing NetlifyBlobAdapter:", error)
 			throw error
@@ -22,13 +23,21 @@ export default class NetlifyBlobAdapter implements StorageAdapterInterface {
 	async load(storageKey: StorageKey): Promise<Uint8Array | undefined> {
 		const key = getKey(storageKey)
 		if (this.cache.has(key)) return this.cache.get(key)
-		const blob = await this.store.get(key, {type: "blob"})
+		try {
+			const blob = await this.store.get(key, {type: "blob"}).catch(error => {
+				console.log(error)
+				return undefined
+			})
 
-		if (blob?.size) {
-			const bytes = await blob.bytes()
-			this.cache.set(key, bytes)
-			return bytes
-		} else {
+			if (blob?.size) {
+				const bytes = await blob.bytes()
+				this.cache.set(key, bytes)
+				return bytes
+			} else {
+				return undefined
+			}
+		} catch (error) {
+			console.error(`Error loading storage key "${key}":`, error)
 			return undefined
 		}
 	}
@@ -36,13 +45,23 @@ export default class NetlifyBlobAdapter implements StorageAdapterInterface {
 	async save(storageKey: StorageKey, data: Uint8Array): Promise<void> {
 		const key = getKey(storageKey)
 		this.cache.set(key, data)
-		await this.store.set(key, new Blob([data]))
+		try {
+			await this.store.set(key, new Blob([data]))
+		} catch (error) {
+			console.error(`Error saving storage key "${key}":`, error)
+			throw error
+		}
 	}
 
 	async remove(storageKey: StorageKey): Promise<void> {
 		const key = getKey(storageKey)
 		this.cache.delete(key)
-		await this.store.delete(key)
+		try {
+			await this.store.delete(key)
+		} catch (error) {
+			console.error(`Error removing storage key "${key}":`, error)
+			throw error
+		}
 	}
 
 	async loadRange(storageKeyPrefix: StorageKey): Promise<Chunk[]> {
@@ -89,10 +108,24 @@ export default class NetlifyBlobAdapter implements StorageAdapterInterface {
 	}
 }
 
-function getKey(storageKey: StorageKey): string {
-	return storageKey.join("/")
+function getCacheKeyFromFilePath(key: string[]) {
+	return key.join("/")
 }
 
-function ungetKey(storageKey: string): StorageKey {
-	return storageKey.split("/")
+function getFilePath(keyArray: string[]): string[] {
+	const [firstKey, ...remainingKeys] = keyArray
+	return [firstKey.slice(0, 2), firstKey.slice(2), ...remainingKeys]
+}
+
+function ungetFilePath(path: string[]) {
+	const [firstKey, secondKey, ...remainingKeys] = path
+	return [firstKey + secondKey, ...remainingKeys]
+}
+
+function getKey(storageKey: StorageKey) {
+	return getCacheKeyFromFilePath(getFilePath(storageKey))
+}
+
+function ungetKey(storageKey: string) {
+	return ungetFilePath(storageKey.split("/"))
 }

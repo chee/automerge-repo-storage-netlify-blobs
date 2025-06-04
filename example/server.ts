@@ -1,11 +1,11 @@
-import fs from "node:fs"
+import "dotenv/config"
 import os from "node:os"
 
 import express from "express"
 import {WebSocketServer} from "ws"
 import {Repo, type PeerId} from "@automerge/automerge-repo"
-import {NodeWSServerAdapter} from "@automerge/automerge-repo-network-websocket"
-import BlobAdapter from "./storage.ts"
+import {WebSocketServerAdapter} from "@automerge/automerge-repo-network-websocket"
+import BlobAdapter from "../source/adapter.ts"
 
 export class Server {
 	#socket: WebSocketServer
@@ -29,7 +29,7 @@ export class Server {
 		app.use(express.static("public"))
 
 		this.#repo = new Repo({
-			network: [new NodeWSServerAdapter(this.#socket)],
+			network: [new WebSocketServerAdapter(this.#socket as any)],
 			storage: new BlobAdapter({
 				siteID: process.env.NETLIFY_SITE_ID,
 				token: process.env.NETLIFY_TOKEN,
@@ -72,6 +72,7 @@ export class Server {
 	close() {
 		this.#socket.close()
 		this.server.close()
+		this.#repo.shutdown()
 	}
 }
 
