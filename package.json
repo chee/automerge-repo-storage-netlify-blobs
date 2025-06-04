@@ -1,7 +1,10 @@
 {
 	"name": "@chee/automerge-repo-storage-netlify-blobs",
+	"publishConfig": {
+		"access": "public"
+	},
 	"version": "1.0.0",
-	"description": "",
+	"description": "experimental storage adapter for automerge repo on Netlify blobs",
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
