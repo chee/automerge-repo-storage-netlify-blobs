@@ -1,5 +1,5 @@
 {
-	"name": "automerge-repo-storage-netlify-blobs",
+	"name": "@chee/automerge-repo-storage-netlify-blobs",
 	"version": "1.0.0",
 	"description": "",
 	"main": "index.js",
