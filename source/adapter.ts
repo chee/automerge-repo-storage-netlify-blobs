@@ -18,13 +18,17 @@ export default class NetlifyBlobsAdapter implements StorageAdapterInterface {
 		const key = getKey(storageKey)
 		if (this.cache.has(key)) return this.cache.get(key)
 
-		const blob = await this.store.get(key, {type: "blob"}).catch(error => {
-			console.log(error)
-			return undefined
-		})
+		const blob = await this.store
+			.get(key, {
+				type: "blob",
+			})
+			.catch(error => {
+				console.log(error)
+				return undefined
+			})
 
 		if (blob?.size) {
-			const bytes = await blob.bytes()
+			const bytes = new Uint8Array(await blob.arrayBuffer())
 			this.cache.set(key, bytes)
 			return bytes
 		} else {
@@ -66,9 +70,9 @@ export default class NetlifyBlobsAdapter implements StorageAdapterInterface {
 				const blob = await this.store.get(key, {type: "blob"})
 
 				if (blob?.size) {
-					const data = await blob.bytes()
-					this.cache.set(key, data)
-					chunks.push({key: ungetKey(key), data})
+					const bytes = new Uint8Array(await blob.arrayBuffer())
+					this.cache.set(key, bytes)
+					chunks.push({key: ungetKey(key), data: bytes})
 				}
 			})
 		})
