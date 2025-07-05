@@ -38,6 +38,7 @@
 		"@automerge/automerge-repo-network-websocket": "2.0.1",
 		"dotenv": "^16.5.0",
 		"esbuild": "^0.25.5",
+		"prettier": "^3.6.2",
 		"vite-plugin-wasm": "^3.4.1",
 		"vitest": "^3.2.1"
 	}
